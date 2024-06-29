@@ -89,6 +89,15 @@ BrailleMapping brailleMap[] = {
   {"111111", '¢'}
 };
 
+char brailleToAscii(String brailleSequence) {
+  for (int i = 0; i < sizeof(brailleMap) / sizeof(brailleMap[0]); i++) {
+    if (brailleSequence == brailleMap[i].sequence) {
+      return brailleMap[i].asciiChar;
+    }
+  }
+  return '?'; // Carácter por defecto si no se reconoce la secuencia
+}
+
 void setup() {
   // Inicializamos la comunicación serial
   Serial.begin(9600);
@@ -122,9 +131,11 @@ void loop() {
       delay(100); // Ajusta el tiempo según sea necesario para leer los datos correctamente
     }
 
-    // Convertimos la secuencia a binario
-    int brailleValue = strtol(brailleSequence.c_str(), NULL, 2);
-    Serial.println(brailleValue); // Enviamos la secuencia binaria al Arduino Mega
+    // Convertir la secuencia a carácter ASCII
+    char asciiChar = brailleToAscii(brailleSequence);
+
+    // Enviamos la secuencia binaria al Arduino Mega
+    Serial.println( (int) asciiChar);
 
     // Enviamos una señal al otro Arduino para mover el motor
     digitalWrite(signalPin, HIGH);
@@ -136,5 +147,5 @@ void loop() {
   }
 
   // Esperamos un poco antes de la siguiente lectura
-  delay(500);
+  delay(5000);
 }
